@@ -34,4 +34,8 @@ for q in [
 ]:
     print(f"\nQ: {q}")
     for result in search(q):
+<<<<<<< HEAD
         print(f"- {result}")
+=======
+        print(f"- {result}")
+>>>>>>> 802cfc19d9435494bf845ec6ded2c08c82d24944
