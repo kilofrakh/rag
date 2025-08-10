@@ -2,9 +2,9 @@ import chromadb
 from sentence_transformers import SentenceTransformer
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2") 
+client = chromadb.Client()
 
-
-documents = [
+docs = [
     "Cats are independent and low-maintenance pets.",
     "Dogs are loyal, energetic, and require regular exercise.",
     "Pizza is made with dough, tomato sauce, and cheese.",
@@ -12,38 +12,26 @@ documents = [
     "Coffee is a popular beverage made from roasted beans.",
 ]
 
-embeddings = embedder.encode(documents).tolist()
 
-
-client = chromadb.Client()
-collection = client.create_collection("semantic_search")
-
-
-collection.add(
-    documents=documents,
-    embeddings=embeddings,
-    ids=[f"id_{i}" for i in range(len(documents))]
+client.create_collection("search").add(
+    documents=docs,
+    embeddings=embedder.encode(docs).tolist(),
+    ids=[f"id_{i}" for i in range(len(docs))]
 )
 
 
-def semantic_search(query: str, top_k: int = 3):
-    query_embedding = embedder.encode(query).tolist()
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=top_k
-    )
-    return results["documents"][0]
+def search(query, n=3):
+    return client.get_collection("search").query(
+        query_embeddings=[embedder.encode(query).tolist()],
+        n_results=n
+    )["documents"][0]
 
 
-queries = [
+for q in [
     "What are good pets for busy people?",
     "Tell me about Italian food.",
     "What drinks are common in the morning?"
-]
-
-
-for query in queries:
-    print(f"\nQuery: '{query}'")
-    results = semantic_search(query)
-    for doc in results:
-        print(f"- {doc}")
+]:
+    print(f"\nQ: {q}")
+    for result in search(q):
+        print(f"- {result}")
