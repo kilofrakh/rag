@@ -1,4 +1,4 @@
-# Python
+
 venv/
 __pycache__/
 *.pyc
@@ -6,9 +6,3 @@ __pycache__/
 *.pyd
 .DS_Store
 
-# Environment variables
-.env
-.env.local
-
-# ChromaDB
-chroma-data/
