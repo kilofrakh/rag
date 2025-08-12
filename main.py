@@ -7,7 +7,7 @@ from services.search_service import SearchService
 from controllers.search_controller import SearchController
 
 def create_app():
-    app = FastAPI(title="PDF Semantic Search API")
+    app = FastAPI(title="Semantic Search API")
     
     
     chroma_client = ChromaClient()
@@ -16,6 +16,8 @@ def create_app():
     
     collection = chroma_client.get_collection(name="pdf_documents")
     vector_repository = VectorRepository(collection=collection)
+
+    
     search_service = SearchService(
         vector_repository=vector_repository,
         embedding_client=embedding_client
