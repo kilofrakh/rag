@@ -1,7 +1,8 @@
+# pdf process service
 from typing import List
 from pypdf import PdfReader
 import os
-from services.chunking import chunking_text
+from services.chunking import chunk_text
 
 class pdfprocess:
     def extract(pdf_path: str) -> List[str]:
@@ -11,7 +12,7 @@ class pdfprocess:
         for page in reader.pages:  
             text = page.extract_text()  
             if text:  
-                page_chunks = chunking_text(text)
+                page_chunks = chunk_text(text)
                 chunks.extend(page_chunks)
         return chunks  
 

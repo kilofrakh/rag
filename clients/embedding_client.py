@@ -1,3 +1,4 @@
+#embedding client
 from sentence_transformers import SentenceTransformer
 
 class EmbeddingClient:
