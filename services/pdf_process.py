@@ -11,7 +11,7 @@ class pdfprocess:
         for page in reader.pages:  
             text = page.extract_text()  
             if text:  
-                page_chunks = chunking_text(text, chunk_size=500, overlap=50)
+                page_chunks = chunking_text(text)
                 chunks.extend(page_chunks)
         return chunks  
 

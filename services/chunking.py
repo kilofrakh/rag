@@ -1,6 +1,6 @@
 from typing import List
 
-def chunking_text(text : str, chunk_size : int = 750, overlap: int = 85):
+def chunking_text(text : str, chunk_size : int = 200, overlap: int = 35):
     chunks = []
 
     start  = 0 
