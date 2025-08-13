@@ -1,11 +1,7 @@
-# search controller
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File
 from models.model_1 import SearchRequest, SearchResult
 from models.upload_model import PDFUpload
 from services.search_service import SearchService
-from services.pdf_process import pdfprocess
-from clients.embedding_client import EmbeddingClient
-from repositories.vector_repo import VectorRepository
 
 class SearchController:
     def __init__(self, search_service: SearchService):
@@ -25,25 +21,7 @@ class SearchController:
     
 
     
-    async def upload_pdf(file: UploadFile = File(...)):
-        try:
+    async def upload_pdf(self, file: UploadFile = File(...)):
 
-            save_path = f"uploads/{file.filename}"
-            pdf_path = pdfprocess.upload(file, save_path)
-            
-            texts = pdfprocess.extract(pdf_path)  
-            
-            embeddings =EmbeddingClient.encode(texts).tolist()
-            ids = [f"{file.filename}_chunk_{i}" for i in range(len(texts))]
-            
-            VectorRepository.add_documents(
-                documents=texts,
-                embeddings=embeddings,
-                ids=ids,
-                metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))]
-            )
-            
-            return {"message": f"Processed {len(texts)} chunks from {file.filename}"}
-        
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+        await self.search_service.process_and_store_pdf(file, file.filename)
+        return {"message": f"PDF {file.filename} processed successfully"}

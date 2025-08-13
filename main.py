@@ -1,5 +1,5 @@
-#main
-from fastapi import FastAPI
+# main.py
+from fastapi import FastAPI, UploadFile, File
 from clients.chroma_client import ChromaClient
 from clients.embedding_client import EmbeddingClient
 from repositories.vector_repo import VectorRepository
