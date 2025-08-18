@@ -1,4 +1,3 @@
-# main.py
 from fastapi import FastAPI, UploadFile, File
 from clients.chroma_client import ChromaClient
 from clients.embedding_client import EmbeddingClient

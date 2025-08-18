@@ -1,4 +1,3 @@
-# vector repo
 from typing import List
 
 class VectorRepository:

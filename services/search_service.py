@@ -1,4 +1,3 @@
-
 from typing import List
 import os
 from services.pdf_process import pdfprocess
@@ -9,6 +8,8 @@ class SearchService:
         self.embedder = embedding_client
         self.upload_dir = upload_dir
         os.makedirs(upload_dir, exist_ok=True)
+
+
 
     async def process_and_store_pdf(self, file, filename: str) -> bool:
         
@@ -30,7 +31,11 @@ class SearchService:
         )
         return True
 
+    
+
     def search(self, query: str, top_k: int) -> List[str]:
         query_embedding = self.embedder.encode(query)
+        
         results = self.vector_repo.query(query_embedding, top_k)
+
         return results["documents"][0]  
