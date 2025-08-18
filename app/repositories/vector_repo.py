@@ -21,6 +21,6 @@ class VectorRepository:
         )
         return results
 
-
-    def delete(self, source: str):
-        return self.collection.delete(where={"source": source})
+# # 
+#     def delete(self, source: str):
+#         return self.collection.delete(where={"source": source})

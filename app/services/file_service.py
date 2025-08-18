@@ -23,10 +23,10 @@ class UploadService:
             metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))]
         )
 
-        return {"message": f"Processed {len(texts)} chunks from {file.filename}"}
+        return {"message": f"Processed {file.filename}"}
 
 
 
-    def handle_delete(self, filename: str):
-        self.vector_repo.delete(where={"source": filename})
-        return {"message": f"Deleted {filename}"}
+    # def handle_delete(self, filename: str):
+    #     self.vector_repo.delete(where={"source": filename})
+    #     return {"message": f"Deleted {filename}"}

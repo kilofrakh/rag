@@ -14,7 +14,7 @@ def split_text(text: str, chunk_size: int = 250, chunk_overlap: int = 27) -> Lis
 class PDFProcess:
     def extract(self, pdf_file) -> List[str]:
         reader = PdfReader(pdf_file)
-        full_text = "".join(page.extract_text() or "" for page in reader.pages)
+        full_text = " ".join(page.extract_text() or "" for page in reader.pages)
         return split_text(full_text)
 
 
