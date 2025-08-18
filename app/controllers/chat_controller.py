@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
-from models.schema import SearchRequest, SearchResult
-from services.search_service import SearchService
-from repositories.vector_repo import VectorRepository   
-from clients.embedding_client import EmbeddingClient
+from app.models.schema import SearchRequest, SearchResult
+from app.services.search_service import SearchService
+from app.repositories.vector_repo import VectorRepository   
+from app.clients.embedding_client import EmbeddingClient
 
 search_router = APIRouter()
 

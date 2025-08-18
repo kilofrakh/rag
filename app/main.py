@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from controllers.search_controller import search_router
-from controllers.upload_controller import upload_router
+from app.controllers.chat_controller import search_router
+from app.controllers.file_controller import upload_router
 
 app = FastAPI()
 

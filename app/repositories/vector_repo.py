@@ -1,5 +1,4 @@
 import chromadb
-import chromadb
 
 class VectorRepository:
     def __init__(self, collection_name: str = "default"):
@@ -15,8 +14,13 @@ class VectorRepository:
         )
 
     def query(self, query_embedding, top_k=5):
+        
         results = self.collection.query(
             query_embeddings=[query_embedding],
             n_results=top_k,
         )
         return results
+
+
+    def delete(self, source: str):
+        return self.collection.delete(where={"source": source})
