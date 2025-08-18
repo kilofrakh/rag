@@ -1,6 +1,6 @@
 from typing import List
 import os
-from services.pdf_process import pdfprocess
+from services.pdf_process import PDFProcess
 
 class SearchService:
     def __init__(self, vector_repository, embedding_client, upload_dir="uploads"):
@@ -15,10 +15,10 @@ class SearchService:
         
         
         save_path = os.path.join(self.upload_dir, filename)
-        pdf_path = pdfprocess.upload(file, save_path)
+        pdf_path = PDFProcess.upload(file, save_path)
         
         
-        texts = pdfprocess.extract(pdf_path)
+        texts = PDFProcess.extract(pdf_path)
         
         
         embeddings = self.embedder.encode(texts)
@@ -35,7 +35,7 @@ class SearchService:
 
     def search(self, query: str, top_k: int) -> List[str]:
         query_embedding = self.embedder.encode(query)
-        
+
         results = self.vector_repo.query(query_embedding, top_k)
 
         return results["documents"][0]  
