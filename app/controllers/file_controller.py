@@ -15,6 +15,6 @@ async def upload_pdf(file: UploadFile = File(...)):
 @upload_router.delete("/delete/{filename}")
 async def delete_pdf(filename: str):
     try:
-        return upload_service.handle_delete(filename)
+        return upload_service.delete(filename)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
