@@ -1,5 +1,6 @@
 from typing import List
 from pypdf import PdfReader
+from chunking import split_text
 
 class PDFProcess:
     def extract(pdf_path:str ) -> List[str]:
