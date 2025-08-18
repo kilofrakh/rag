@@ -2,25 +2,20 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from services.pdf_process import PDFProcess
 from clients.embedding_client import EmbeddingClient
 from repositories.vector_repo import VectorRepository
-import os
 
 upload_router = APIRouter()
 
-pdfprocess = PDFProcess
-embedding_client = EmbeddingClient
-vector_repo = VectorRepository
+pdfprocess = PDFProcess()
+embedding_client = EmbeddingClient()
+vector_repo = VectorRepository()  
 
 @upload_router.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
     try:
-        os.makedirs("uploads", exist_ok=True)
+        pdf_file = await pdfprocess.upload(file)   # returns BytesIO
+        texts = pdfprocess.extract(pdf_file)       # returns list of chunks
         
-        save_path = f"uploads/{file.filename}"
-        pdf_path = await pdfprocess.upload(file, save_path)
-        
-        texts = pdfprocess.extract(pdf_path)  
-        
-        embeddings = embedding_client.encode(texts).tolist()
+        embeddings = embedding_client.encode(texts)
         ids = [f"{file.filename}_chunk_{i}" for i in range(len(texts))]
         
         vector_repo.add_documents(
