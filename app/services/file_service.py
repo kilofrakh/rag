@@ -25,6 +25,8 @@ class UploadService:
 
         return {"message": f"Processed {len(texts)} chunks from {file.filename}"}
 
+
+
     def handle_delete(self, filename: str):
-        deleted_count = self.vector_repo.delete(where={"source": filename})
-        return {"message": f"Deleted {deleted_count} chunks for {filename}"}
+        self.vector_repo.delete(where={"source": filename})
+        return {"message": f"Deleted {filename}"}
