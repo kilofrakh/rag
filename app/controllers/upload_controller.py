@@ -11,9 +11,10 @@ vector_repo = VectorRepository()
 
 @upload_router.post("/upload")
 async def upload_pdf(file: UploadFile = File(...)):
+  
     try:
-        pdf_file = await pdfprocess.upload(file)   # returns BytesIO
-        texts = pdfprocess.extract(pdf_file)       # returns list of chunks
+        pdf_file = await pdfprocess.upload(file)   
+        texts = pdfprocess.extract(pdf_file)       
         
         embeddings = embedding_client.encode(texts)
         ids = [f"{file.filename}_chunk_{i}" for i in range(len(texts))]
@@ -21,11 +22,9 @@ async def upload_pdf(file: UploadFile = File(...)):
         vector_repo.add_documents(
             documents=texts,
             embeddings=embeddings,
-            ids=ids,
-            metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))]
-        )
+            ids=ids, metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))])
         
-        return {"message": f"Processed {len(texts)} chunks from {file.filename}"}
+        return {"message": f"Processed chunks from {file.filename}"}
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

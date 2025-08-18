@@ -7,5 +7,7 @@ class SearchService:
 
     def search(self, query: str, top_k: int) -> List[str]:
         query_embedding = self.embedder.encode(query)
+
         results = self.vector_repo.query(query_embedding, top_k)
+        
         return [doc for docs in results["documents"] for doc in docs]
