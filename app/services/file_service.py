@@ -21,13 +21,14 @@ class UploadService:
             documents=texts,
             embeddings=embeddings,
             ids=ids,
-            metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))]
+            metadatas=[{"source": file.filename, "chunk_num": i} for i in range(len(texts))],
+            filename=file.filename
         )
 
         return {"message": f"Processed {file.filename}"}
 
 
-
     def handle_delete(self, filename: str):
-        self.vector_repo.delete(where={"source": {"$eq": filename}})
-        return {"message": f"Deleted all chunks from {filename}"}
+        
+        return self.vector_repo.delete_file(filename)
+
