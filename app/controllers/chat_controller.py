@@ -3,6 +3,8 @@ from app.models.schema import SearchRequest, SearchResult
 from app.services.search_service import SearchService
 from app.repositories.vector_repo import VectorRepository   
 from app.clients.embedding_client import EmbeddingClient
+from app.deps import get_current_user
+
 
 search_router = APIRouter()
 
@@ -19,7 +21,7 @@ def get_search_service():
     return SearchService(vector_repo, embedder)
 
 
-@search_router.post("/search", response_model=SearchResult)
+@search_router.post("/search", response_model=SearchResult, dependencies=[Depends(get_current_user)])
 async def search(
     request: SearchRequest,
     search_service: SearchService = Depends(get_search_service)):
