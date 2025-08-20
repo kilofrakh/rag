@@ -6,6 +6,12 @@ from app.clients.embedding_client import EmbeddingClient
 
 search_router = APIRouter()
 
+
+# Dependency Injection ya3ni enta mat3melsh create lel objects gowa el route.
+# bet3ml function zy get_search_service elle btraga3 el object.
+# FastAPI ma3 Depends() by3ml auto call lel function deh we y7ot el object fe el parameter.
+# Keda el code byb2a cleaner easy to test we re-usable fe kaza endpoint.
+
 def get_search_service():
     
     vector_repo = VectorRepository()
