@@ -7,6 +7,7 @@ class UploadService:
         self.pdfprocess = PDFProcess()
         self.embedding_client = EmbeddingClient()
         self.vector_repo = VectorRepository()
+        
 
     async def handle_upload(self, file):
         pdf_file = await self.pdfprocess.upload(file)
@@ -27,6 +28,6 @@ class UploadService:
 
 
 
-    # def handle_delete(self, filename: str):
-    #     self.vector_repo.delete(where={"source": filename})
-    #     return {"message": f"Deleted {filename}"}
+    def handle_delete(self, filename: str):
+        self.vector_repo.delete(where={"source": {"$eq": filename}})
+        return {"message": f"Deleted all chunks from {filename}"}
