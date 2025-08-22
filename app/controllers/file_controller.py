@@ -1,3 +1,4 @@
+#controllers / file
 from fastapi import APIRouter, UploadFile, File, HTTPException,Depends
 from app.services.file_service import UploadService
 from app.deps import get_current_user
@@ -6,18 +7,25 @@ upload_router = APIRouter()
 
 #sahef malahash lazma aala haga wahda
 upload_service = UploadService()
-
-@upload_router.post("/upload",dependencies=[Depends(get_current_user)])
-async def upload_pdf(file: UploadFile = File(...)):
+@upload_router.post("/upload")
+async def upload_pdf(
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user)   # <-- user info from JWT
+):
     try:
-        return await upload_service.handle_upload(file)
+        service = UploadService(user["id"])
+        return await service.handle_upload(file)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@upload_router.delete("/delete/{filename}",dependencies=[Depends(get_current_user)])
-async def delete_pdf(filename: str):
+@upload_router.delete("/delete/{filename}")
+async def delete_pdf(
+    filename: str,
+    user: dict = Depends(get_current_user)
+):
     try:
-        return upload_service.handle_delete(filename)
+        service = UploadService(user["id"])
+        return service.handle_delete(filename)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
