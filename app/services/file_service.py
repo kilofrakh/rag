@@ -18,7 +18,7 @@ class UploadService:
             documents=texts,
             embeddings=embeddings,
             ids=ids,
-            metadatas=[{"source": file.filename, "chunk_num": i}],
+            metadatas=[{"source": file.filename, "chunk": i} for i in range(len(texts))],
             filename=file.filename
         )
         return {"message": f"Processed {file.filename}"}
