@@ -1,3 +1,4 @@
+#controllers / chat
 from fastapi import APIRouter, Depends
 from app.models.schema import SearchRequest, SearchResult
 from app.services.search_service import SearchService
@@ -20,12 +21,14 @@ def get_search_service():
     embedder = EmbeddingClient()
     return SearchService(vector_repo, embedder)
 
-
-@search_router.post("/search", response_model=SearchResult, dependencies=[Depends(get_current_user)])
+@search_router.post("/search", response_model=SearchResult)
 async def search(
     request: SearchRequest,
-    search_service: SearchService = Depends(get_search_service)):
-
+    user: dict = Depends(get_current_user)
+):
+    vector_repo = VectorRepository(user["id"])   # user-specific repo
+    embedder = EmbeddingClient()
+    search_service = SearchService(vector_repo, embedder)
 
     results = search_service.search(request.query, request.top_k)
     return SearchResult(results=results)
