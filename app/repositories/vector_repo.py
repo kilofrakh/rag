@@ -1,34 +1,19 @@
-import chromadb
-
+# app/repositories/vector_repo.py
 class VectorRepository:
-    def __init__(self, user_id: str):
-        self.client = chromadb.Client()
-        # each user has their own collection
-        self.collection = self.client.get_or_create_collection(name=f"user_{user_id}")
-        self.file_index = {}
+    def __init__(self):
+        from chromadb import Client
+        self.client = Client()
+        self.collection = self.client.get_or_create_collection("documents")
 
-    def add_documents(self, documents, embeddings, ids, metadatas=None, filename: str = None):
+    def add_documents(self, user_id: str, chunks, embeddings):
+        ids = [f"{user_id}_{i}" for i in range(len(chunks))]
         self.collection.add(
-            documents=documents,
+            documents=chunks,
             embeddings=embeddings,
+            metadatas=[{"user_id": user_id} for _ in chunks],
             ids=ids,
-            metadatas=metadatas,
-        )
-        if filename:
-            if filename not in self.file_index:
-                self.file_index[filename] = []
-            self.file_index[filename].extend(ids)
-
-    def query(self, query_embedding, top_k=5):
-        return self.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=top_k,
         )
 
-    def delete_file(self, filename: str):
-        if filename not in self.file_index:
-            return {"message": f"No {filename}"}
-        ids_delete = self.file_index[filename]
-        self.collection.delete(ids=ids_delete)
-        del self.file_index[filename]
-        return {"message": f"Deleted {filename}"}
+    def delete_document(self, user_id: str, doc_id: str):
+        # Ensure only this user’s docs are deleted
+        self.collection.delete(where={"user_id": user_id, "doc_id": doc_id})
