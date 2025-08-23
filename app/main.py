@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.controllers import file_controller as docs_router  # or app.routers.docs_router if you placed it there
 from app.controllers import auth_controller as auth_router
+from app.controllers import chat_controller as chat_router  # new import
 
 app = FastAPI(title="thinkgpt")
 
@@ -15,6 +16,7 @@ app.add_middleware(
 
 app.include_router(auth_router.router)
 app.include_router(docs_router.router)
+app.include_router(chat_router.chat_router)
 
 # (include any other routers you already have)
 

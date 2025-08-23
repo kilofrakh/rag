@@ -1,34 +1,29 @@
-#controllers / chat
-from fastapi import APIRouter, Depends
-from app.models.schema import SearchRequest, SearchResult
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from app.core.security import get_current_user_id
 from app.services.search_service import SearchService
-from app.repositories.vector_repo import VectorRepository   
-from app.clients.embedding_client import EmbeddingClient
-from app.deps import get_current_user
+from app.repositories.vector_repo import VectorRepository
+from app.clients.llm_client import LLMClient
 
+chat_router = APIRouter(prefix="/chat", tags=["chat"])
 
-search_router = APIRouter()
+# Initialize once
+vector_repo = VectorRepository()
+llm_client = LLMClient()
+search_service = SearchService(vector_repo, llm_client)
 
+class AskRequest(BaseModel):
+    question: str
+    top_k: int = 5
 
-# Dependency Injection ya3ni enta mat3melsh create lel objects gowa el route.
-# bet3ml function zy get_search_service elle btraga3 el object.
-# FastAPI ma3 Depends() by3ml auto call lel function deh we y7ot el object fe el parameter.
-# Keda el code byb2a cleaner easy to test we re-usable fe kaza endpoint.
+class AskResponse(BaseModel):
+    question: str
+    answer: str
+    sources: list
 
-def get_search_service():
-    
-    vector_repo = VectorRepository()
-    embedder = EmbeddingClient()
-    return SearchService(vector_repo, embedder)
-
-@search_router.post("/search", response_model=SearchResult)
-async def search(
-    request: SearchRequest,
-    user: dict = Depends(get_current_user)
-):
-    vector_repo = VectorRepository(user["id"])   # user-specific repo
-    embedder = EmbeddingClient()
-    search_service = SearchService(vector_repo, embedder)
-
-    results = search_service.search(request.query, request.top_k)
-    return SearchResult(results=results)
+@chat_router.post("/ask", response_model=AskResponse)
+async def ask(request: AskRequest, user_id: str = Depends(get_current_user_id)):
+    if not request.question.strip():
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
+    result = search_service.ask(user_id=user_id, question=request.question, n_results=request.top_k)
+    return result
