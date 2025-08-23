@@ -1,17 +1,23 @@
-# app/ main
 from fastapi import FastAPI
-from app.controllers.chat_controller import search_router
-from app.controllers.file_controller import upload_router
-from app.controllers.auth_controller import auth_router
+from fastapi.middleware.cors import CORSMiddleware
+from app.controllers import file_controller as docs_router  # or app.routers.docs_router if you placed it there
+from app.controllers import auth_controller as auth_router
 
-app = FastAPI(title = "thinkgbt")
+app = FastAPI(title="thinkgpt")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # tighten for prod
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-app.include_router(search_router)
-app.include_router(upload_router)
-app.include_router(auth_router)
+app.include_router(auth_router.router)
+app.include_router(docs_router.router)
 
+# (include any other routers you already have)
 
 @app.get("/")
 def read_root():
-    return {"message": "shaghal"}
+    return {"message": "Welcome to the RAG with Per-User Chroma API"}
