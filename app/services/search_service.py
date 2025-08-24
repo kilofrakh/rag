@@ -9,44 +9,34 @@ class SearchService:
         self.vector_repo = vector_repo
         self.llm = llm
 
-    def ask(
-        self,
-        user_id: str,
-        question: str,
-        n_results: int = 5
-    ) -> Dict[str, Any]:
-        """
-        1) Retrieve top chunks for this user from Chroma
-        2) Concatenate them into context
-        3) Ask the LLM to generate an answer using that context
-        4) Return answer + sources
-        """
-        # 1. Retrieve top K chunks for this user
+    def ask(self,user_id: str,question: str,n_results: int = 5) -> Dict[str, Any]:
+       
         query_response = self.vector_repo.query_text(
             query_text=question,
             n_results=n_results,
             where={"user_id": user_id}
         )
 
-        # 2. Build context
-        # Chroma returns 'documents', 'metadatas', 'ids'
+        
         docs = query_response.get("documents", [])
         metas = query_response.get("metadatas", [])
         ids = query_response.get("ids", [])
 
-        # Build text context with some source info
+
         snippets = []
         for i, text in enumerate(docs):
             md = metas[i] if i < len(metas) else {}
+
             src = f"[{md.get('filename', 'unknown')}]" if isinstance(md, dict) else ""
+
             snippets.append(f"{src}\n{text}")
 
         context = "\n---\n".join(snippets)
 
-        # 3. Ask LLM
+        # el llm beygen el ans
         answer = self.llm.generate_answer(question=question, context=context)
 
-        # 4. Return a structured result
+        # elegba elkamla
         return {
             "question": question,
             "answer": answer.strip(),

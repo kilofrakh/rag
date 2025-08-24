@@ -1,4 +1,3 @@
-#app / deps
 from fastapi import Depends, HTTPException, status
 from jose import JWTError
 from app.core.security import oauth2_scheme, decode_token

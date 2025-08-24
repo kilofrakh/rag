@@ -1,4 +1,3 @@
-# models / upload model
 from pydantic import BaseModel
 from typing import Optional
 

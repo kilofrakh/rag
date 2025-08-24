@@ -7,6 +7,9 @@ class PDFProcess:
     def extract_text(self, pdf_bytes: bytes) -> str:
         reader =  extract_text(io.BytesIO(pdf_bytes))
         return reader
+    
+
+    
     def split_text(self, text: str, chunk_size: int = 250, chunk_overlap: int = 27) -> List[str]:
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,

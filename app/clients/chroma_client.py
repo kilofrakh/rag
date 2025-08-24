@@ -1,4 +1,3 @@
-#clients/ chroma
 import chromadb
 
 class ChromaClient:

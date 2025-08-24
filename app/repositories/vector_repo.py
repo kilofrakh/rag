@@ -14,32 +14,24 @@ class VectorRepository:
         self.client = chromadb.PersistentClient(path=path, settings=Settings())
         self.collection = self.client.get_or_create_collection(collection_name)
 
-    def add_texts(
-        self,
-        texts: List[str],
-        metadatas: Optional[List[Dict[str, Any]]] = None,
-        ids: Optional[List[str]] = None,
-    ) -> List[str]:
+    def add_texts( self, texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = None, ids: Optional[List[str]] = None,) -> List[str]:
+       
         if ids is None:
+            # elka'en da uuid 3shan kol text yeb2a 3ando id mo5talef (unique)
             ids = [str(uuid.uuid4()) for _ in texts]
-        self.collection.add(
-            documents=texts,
-            metadatas=metadatas,
-            ids=ids
-        )
+        
+        self.collection.add( documents=texts, metadatas=metadatas, ids=ids)
+      
         return ids
 
-    def query_text(
-        self,
-        query_text: str,
-        n_results: int = 5,
-        where: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+    def query_text(self, query_text: str, n_results: int = 5, where: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        
         return self.collection.query(
             query_texts=[query_text],
             n_results=n_results,
             where=where
         )
 
+   
     def delete_where(self, where: Dict[str, Any]) -> None:
         self.collection.delete(where=where)
