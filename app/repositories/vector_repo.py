@@ -2,13 +2,14 @@ import os
 import uuid
 from typing import List, Optional, Dict, Any
 from dotenv import load_dotenv
+import chromadb
+from chromadb.config import Settings
 
 load_dotenv()
 
 class VectorRepository:
     def __init__(self, collection_name: str = "pdf_chunks"):
-        import chromadb
-        from chromadb.config import Settings
+        
 
         path = os.getenv("CHROMA_PATH", "./chroma_db")
         self.client = chromadb.PersistentClient(path=path, settings=Settings())
@@ -20,8 +21,7 @@ class VectorRepository:
             # elka'en da uuid 3shan kol text yeb2a 3ando id mo5talef (unique)
             ids = [str(uuid.uuid4()) for _ in texts]
         
-        self.collection.add( documents=texts, metadatas=metadatas, ids=ids)
-      
+        self.collection.add(documents=texts, metadatas=metadatas, ids=ids)
         return ids
 
     def query_text(self, query_text: str, n_results: int = 5, where: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

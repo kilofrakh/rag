@@ -14,11 +14,13 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         uid: str = payload.get("uid")
         if username is None or uid is None:
             raise HTTPException(status_code=401, detail="Invalid token")
+        
         repo = UserRepository()
         user = repo.get_by_id(uid)
         if not user or user.get("username") != username:
             raise HTTPException(status_code=401, detail="User not found")
-        # return a minimal user object
+        
         return {"id": uid, "username": username}
     except JWTError:
+        
         raise HTTPException(status_code=401, detail="Could not validate credentials")
