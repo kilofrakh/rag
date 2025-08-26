@@ -9,5 +9,35 @@ __pycache__/
 *.pdf
 
 .env
+.env*
+.env.*
+*.env
 instance/
+
+.vscode
+pycache/
+**/pycache/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+.env/
+.pdm-python
+venv/
+ENV/
+
+# Environment files
+.env
+.env.*
+*.env
+
+# remove db files
+*.sqlite3
+*.db
+*.db-journal
+#chromadb remove
+
+chroma_db/
+chroma_db-*
 
