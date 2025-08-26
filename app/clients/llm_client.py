@@ -1,6 +1,7 @@
 import os
 from groq import Groq
 
+
 class LLMClient:
     def __init__(self):
         api_key = os.getenv("GROQ_API_KEY")
@@ -10,13 +11,13 @@ class LLMClient:
 
     def generate_answer(self, question: str, context: str) -> str:
         prompt = (
-            "You are a helpful assistant. Use the context below to answer the question.\n\n"
+            "Use the context below to answer the question.\n\n"
             f"Context:\n{context}\n\n"
             f"Question: {question}\n"
             "Answer:"
         )
         resp = self.client.chat.completions.create(
-            model="llama3-8b-8192",  # Groq’s free model
+            model="llama3-8b-8192", 
             messages=[{"role": "user", "content": prompt}],
             temperature=0.2,
         )

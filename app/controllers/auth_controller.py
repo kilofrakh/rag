@@ -1,17 +1,16 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
-from app.core.security import (
-    verify_password, get_password_hash, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
-)
+from fastapi import APIRouter, HTTPException, status , Depends
+from app.core.security import (verify_password, get_password_hash, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES)
 from app.repositories.user_repo import UserRepository
-from app.models.user_model import UserCreate, Token, UserPublic
-from app.core.security import oauth2_scheme  
+from app.models.user_model import UserCreate, UserPublic 
+from fastapi.security import HTTPBearer
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+auth_router = APIRouter(prefix="/auth", tags=["auth"])
 repo = UserRepository()
 
-@router.post("/register", response_model=UserPublic, status_code=201)
+@auth_router.post("/register", response_model=UserPublic, status_code=201)
 def register(payload: UserCreate):
 
     if repo.get_by_username(payload.username):
@@ -20,19 +19,18 @@ def register(payload: UserCreate):
     
     uid = repo.create_user(payload.username, get_password_hash(payload.password))
     
-    return {"id": uid, "username": payload.username}
+    return UserPublic(id=uid, username=payload.username)
 
-@router.post("/login", response_model=Token)
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = repo.get_by_username(form_data.username)
-    
-    if not user or not verify_password(form_data.password, user["password_hash"]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+@auth_router.post("/login")
 
-    access_token = create_access_token(
-        data={"sub": user["username"], "uid": str(user["_id"])},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}
-
+def login(payload: HTTPBearer = Depends(HTTPBearer())):
+    token = payload.credentials
+    try:
+        decoded = create_access_token({"uid": token}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+        user = repo.get_by_id(token)
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        
+        return {"access_token": decoded, "token_type": "bearer"}
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid credentials")

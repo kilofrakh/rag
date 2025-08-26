@@ -33,5 +33,5 @@ class VectorRepository:
         )
 
    
-    def delete_where(self, where: Dict[str, Any]) -> None:
+    def delete_all(self, where: Dict[str, Any]) -> None:
         self.collection.delete(where=where)

@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any
 from bson import ObjectId
-from app.core.database import get_db
+from app.clients.mongo_client import get_db
 
 class UserRepository:
     def __init__(self):

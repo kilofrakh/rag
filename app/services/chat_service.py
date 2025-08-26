@@ -1,6 +1,4 @@
-import os
 from typing import Dict, Any
-
 from app.repositories.vector_repo import VectorRepository
 from app.clients.llm_client import LLMClient
 

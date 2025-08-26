@@ -1,14 +1,16 @@
 from fastapi import FastAPI
-from app.controllers import file_controller as docs_router  
-from app.controllers import auth_controller as auth_router
-from app.controllers import chat_controller as chat_router  
+from app.controllers.file_controller import file_router 
+from app.controllers.chat_controller import chat_router
+from app.controllers.auth_controller import auth_router
 
-app = FastAPI(title="thinkgpt")
+app = FastAPI(title="thinkgpt", description="developed by kilofrakh")
 
-app.include_router(auth_router.router)
-app.include_router(docs_router.router)
-app.include_router(chat_router.chat_router)
+app.include_router(auth_router)
+app.include_router(file_router)
+app.include_router(chat_router)
 
+
+# lifespan 
 
 @app.get("/")
 def read_root():

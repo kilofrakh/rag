@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -14,12 +13,3 @@ class UserLogin(BaseModel):
 class UserPublic(BaseModel):
     id: str
     username: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str = "bearer"
-
-class TokenData(BaseModel):
-    sub: Optional[str] = None  
-    uid: Optional[str] = None  

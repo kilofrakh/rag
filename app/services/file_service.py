@@ -2,6 +2,7 @@ from app.services.pdf_process import PDFProcess
 from app.clients.embedding_client import EmbeddingClient
 from app.repositories.vector_repo import VectorRepository
 
+
 class UploadService:
     def __init__(self, user_id: str):
         self.user_id = user_id
@@ -15,8 +16,8 @@ class UploadService:
         chunks = self.pdfprocess.split_text(text)
 
 
-        embeddings = self.embedding_client.embed_chunks(chunks)
-        self.vector_repo.add_documents(
+        embeddings = self.embedding_client.encode(chunks)
+        self.vector_repo.add_texts(
             user_id=self.user_id,
             chunks=chunks,
             embeddings=embeddings,
@@ -25,6 +26,5 @@ class UploadService:
         return {"status": "success", "chunks_stored": len(chunks)}
 
     async def delete_document(self, doc_id: str):
-        # Delete only documents belonging to this user
-        self.vector_repo.delete_document(user_id=self.user_id, doc_id=doc_id)
+        self.vector_repo.delete_all(user_id=self.user_id, doc_id=doc_id)
         return {"status": "deleted", "doc_id": doc_id}
