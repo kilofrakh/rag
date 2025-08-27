@@ -20,24 +20,28 @@ pycache/
 *.py[cod]
 *$py.class
 
-# Virtual environments
 .venv/
 .env/
 .pdm-python
 venv/
 ENV/
 
-# Environment files
 .env
 .env.*
 *.env
 
-# remove db files
 *.sqlite3
 *.db
 *.db-journal
-#chromadb remove
+
+chromadb/
+chromadb-*
+
+.env.prod
 
 chroma_db/
 chroma_db-*
+chroma_db/
+chroma.sqlite3
+
 
