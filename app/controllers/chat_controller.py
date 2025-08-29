@@ -1,60 +1,52 @@
+# app/controllers/chat_controller.py
 from fastapi import APIRouter, Depends, HTTPException
 from app.core.security import get_current_user_id
-from app.services.chat_service import SearchService
+from app.services.chat_service import ChatService
 from app.repositories.vector_repo import VectorRepository
 from app.clients.llm_client import LLMClient
-from app.models.schema.chat_schemas import AskRequest, AskResponse
-from app.repositories.user_repo import UserRepository
-from app.repositories.chat_repo import ChatRepository
-from app.repositories.message_repo import MessageRepository
-from app.clients.embedding_client import EmbeddingClient
+from app.models.schema.chat_schemas import AskRequest, AskResponse, ChatHistoryResponse
+from typing import Any
 
 chat_router = APIRouter(prefix="/chat", tags=["chat"])
 
+def get_chat_service() -> ChatService:
+    # create service with your real VectorRepo/LLM clients in production
+    return ChatService(vector_repo=VectorRepository(), llm=LLMClient())
 
-def get_chat_service():
-    vector_repo = VectorRepository()
-    llm_client = LLMClient()
-    chat_repo = ChatRepository()
-    message_repo = MessageRepository()
-    embedding_client = EmbeddingClient()
+@chat_router.post("/start")
+def start_chat(user_id: str = Depends(get_current_user_id), chat_service: ChatService = Depends(get_chat_service)):
+    chat_id = chat_service.start_chat(user_id)
+    return {"chat_id": chat_id}
 
-    return SearchService(vector_repo=vector_repo, llm=llm_client)
-
-
-
-@chat_router.post("/ask", response_model=AskResponse)
+@chat_router.post("/{chat_id}/ask", response_model=AskResponse)
 async def ask(
+    chat_id: str,
     request: AskRequest,
     user_id: str = Depends(get_current_user_id),
-    chat_service: SearchService = Depends(get_chat_service)
+    chat_service: ChatService = Depends(get_chat_service)
 ):
     if not request.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
-    
-    result = chat_service.ask(user_id=user_id, question=request.question, n_results=request.top_k)
 
-    chat_repo = ChatRepository()
-    message_repo = MessageRepository()
-    chat_history = chat_repo.add_message(user_id, {"question": request.question, "answer": result["answer"], "sources": result["sources"]
-    })
-    message_repo.add_message(user_id, {"role": "user", "content": request.question})
-    message_repo.add_message(user_id, {"role": "bot", "content": result["answer"]})
-
-
-
-
-
+    result = chat_service.ask(chat_id=chat_id, user_id=user_id, question=request.question, n_results=request.top_k)
     return AskResponse(**result)
 
-@chat_router.get("/history")
-def get_chat_history(user_id: str = Depends(get_current_user_id)):
-    chat_repo = ChatRepository()
-    chat_history = chat_repo.get_history(user_id)
-    if chat_history is None:
-        raise HTTPException(status_code=404, detail="No chat history found for user")   
-    
+@chat_router.get("/{chat_id}")
+def get_chat(chat_id: str, chat_service: ChatService = Depends(get_chat_service)):
+    chat = chat_service.get_chat(chat_id)
+    if not chat:
+        raise HTTPException(status_code=404, detail="Chat not found")
+    # chat already serialized in repo (created_at iso strings)
+    return chat
 
+@chat_router.get("/{chat_id}/messages")
+def get_chat_messages(chat_id: str, chat_service: ChatService = Depends(get_chat_service)):
+    messages = chat_service.get_messages(chat_id)
+    if not messages:
+        raise HTTPException(status_code=404, detail="No messages found for this chat")
+    return {"chat_id": chat_id, "messages": messages}
 
-    return {"chat_history": chat_history}
-
+@chat_router.get("/user/chats")
+def get_user_chats(user_id: str = Depends(get_current_user_id), chat_service: ChatService = Depends(get_chat_service)):
+    chats = chat_service.get_user_chats(user_id)
+    return {"user_id": user_id, "chats": chats}

@@ -8,3 +8,4 @@ class ChromaClient:
     
     def get_collection(self, name: str):
         return self.client.get_or_create_collection(name)
+    

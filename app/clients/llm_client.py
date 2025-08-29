@@ -1,10 +1,12 @@
-import os
 from groq import Groq
+from app.core.config import config
 
+
+API_KEY = config.GROQ_API_KEY
 
 class LLMClient:
     def __init__(self):
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = API_KEY
         if not api_key:
             raise ValueError("Missing GROQ_API_KEY in environment")
         self.client = Groq(api_key=api_key)
