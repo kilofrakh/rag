@@ -1,4 +1,3 @@
-# app/repositories/message_repo.py
 from typing import Dict, Any, List
 from bson import ObjectId
 from app.clients.mongo_client import get_db

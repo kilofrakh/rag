@@ -1,4 +1,3 @@
-# app/services/chat_service.py
 from typing import Dict, Any
 from app.repositories.vector_repo import VectorRepository
 from app.clients.llm_client import LLMClient
@@ -20,10 +19,8 @@ class ChatService:
         return self.chat_repo.create_chat(user_id)
 
     def ask(self, chat_id: str, user_id: str, question: str, n_results: int = 5) -> Dict[str, Any]:
-        # Create embeddings
         q_embedding = self.embedding_client.encode([question])[0]
 
-        # Query vector DB for context
         query_response = self.vector_repo.query_embedding(
             query_embedding=q_embedding,
             n_results=n_results,
@@ -42,18 +39,16 @@ class ChatService:
 
         context = "\n".join(snippets)
 
-        # Ask LLM
+        
         answer = self.llm.generate_answer(question=question, context=context)
 
-        now = datetime.utcnow()
+        now = datetime.now()
 
-        # persist messages (with chat_id)
         self.message_repo.add_message(user_id=user_id, chat_id=chat_id,
                                       message={"role": "user", "content": question, "created_at": now})
         self.message_repo.add_message(user_id=user_id, chat_id=chat_id,
                                       message={"role": "bot", "content": answer, "created_at": now})
 
-        # persist chat entry
         entry = {"question": question, "answer": answer, "sources": ids, "created_at": now}
         self.chat_repo.add_entry(chat_id=chat_id, entry=entry)
 

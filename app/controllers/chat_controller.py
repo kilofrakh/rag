@@ -1,4 +1,3 @@
-# app/controllers/chat_controller.py
 from fastapi import APIRouter, Depends, HTTPException
 from app.core.security import get_current_user_id
 from app.services.chat_service import ChatService
@@ -10,7 +9,7 @@ from typing import Any
 chat_router = APIRouter(prefix="/chat", tags=["chat"])
 
 def get_chat_service() -> ChatService:
-    # create service with your real VectorRepo/LLM clients in production
+
     return ChatService(vector_repo=VectorRepository(), llm=LLMClient())
 
 @chat_router.post("/start")
@@ -36,7 +35,7 @@ def get_chat(chat_id: str, chat_service: ChatService = Depends(get_chat_service)
     chat = chat_service.get_chat(chat_id)
     if not chat:
         raise HTTPException(status_code=404, detail="Chat not found")
-    # chat already serialized in repo (created_at iso strings)
+    
     return chat
 
 @chat_router.get("/{chat_id}/messages")

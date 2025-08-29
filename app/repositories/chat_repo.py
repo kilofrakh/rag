@@ -1,4 +1,3 @@
-# app/repositories/chat_repo.py
 from typing import List, Dict, Any, Optional
 from bson import ObjectId
 from app.clients.mongo_client import get_db
@@ -18,7 +17,6 @@ class ChatRepository:
         return str(result.inserted_id)
 
     def add_entry(self, chat_id: str, entry: Dict[str, Any]) -> None:
-        # entry should include created_at
         self.col.update_one(
             {"_id": ObjectId(chat_id)},
             {"$push": {"entries": entry}}
@@ -28,11 +26,11 @@ class ChatRepository:
         doc = self.col.find_one({"_id": ObjectId(chat_id)})
         if not doc:
             return None
-        # serialize id and datetimes
+
         doc["_id"] = str(doc["_id"])
         if "created_at" in doc and doc["created_at"] is not None:
             doc["created_at"] = doc["created_at"].isoformat()
-        # convert entries created_at too
+
         entries = doc.get("entries", [])
         for e in entries:
             if "created_at" in e and e["created_at"] is not None:
