@@ -1,5 +1,4 @@
 import cohere
-import os
 from typing import List
 from app.core.config import config
 
